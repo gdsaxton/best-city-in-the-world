@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Best City in the World for Me</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --border: #e5e7eb;
+      --good: #16a34a;
+      --shadow: 0 20px 45px rgba(15, 23, 42, 0.10);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #e0f2fe, transparent 38%), var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 18px 56px;
+    }
+
+    header {
+      text-align: center;
+      margin: 16px auto 32px;
+      max-width: 780px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #1d4ed8;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 4.6rem);
+      line-height: 0.95;
+      margin: 18px 0 18px;
+      letter-spacing: -0.06em;
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--muted);
+      margin: 0 auto;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(330px, 0.95fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .question-card {
+      padding: 24px;
+    }
+
+    .results-card {
+      padding: 24px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-title h2 {
+      font-size: 1.35rem;
+      margin: 0;
+      letter-spacing: -0.03em;
+    }
+
+    .section-title span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .question {
+      padding: 18px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .question:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    label.question-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      font-weight: 750;
+      margin-bottom: 10px;
+    }
+
+    .value-pill {
+      flex: 0 0 auto;
+      min-width: 86px;
+      text-align: center;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #374151;
+      font-size: 0.86rem;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: -2px 0 10px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .scale {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 2px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.22);
+    }
+
+    .secondary {
+      background: #eef2ff;
+      color: #3730a3;
+    }
+
+    .results-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .result {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      background: #fff;
+      transition: transform 0.16s ease, border-color 0.16s ease;
+    }
+
+    .result:hover {
+      transform: translateY(-2px);
+      border-color: #bfdbfe;
+    }
+
+    .result-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 10px;
+    }
+
+    .rank-city {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .rank {
+      width: 30px;
+      height: 30px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      color: #1d4ed8;
+      font-weight: 900;
+      font-size: 0.9rem;
+    }
+
+    .city-name {
+      font-weight: 900;
+      font-size: 1.08rem;
+      letter-spacing: -0.02em;
+    }
+
+    .country {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 1px;
+    }
+
+    .score {
+      font-size: 1.15rem;
+      font-weight: 950;
+      color: var(--good);
+      white-space: nowrap;
+    }
+
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      background: #eef2f7;
+      overflow: hidden;
+      margin: 10px 0 11px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #60a5fa, #16a34a);
+      width: 0%;
+      transition: width 0.45s ease;
+    }
+
+    .explanation {
+      color: #4b5563;
+      font-size: 0.92rem;
+      margin: 0;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      font-size: 0.74rem;
+      color: #374151;
+      background: #f3f4f6;
+      border-radius: 999px;
+      padding: 4px 8px;
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 18px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 16px;
+      background: #f8fafc;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      margin-top: 28px;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 880px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .results-card {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="eyebrow">City Matchmaker</div>
+      <h1>Find your best city in the world.</h1>
+      <p class="subtitle">Answer ten preference questions and get your top five global city matches. The scoring uses a small built-in dataset and runs entirely in your browser.</p>
+    </header>
+
+    <section class="layout">
+      <div class="card question-card">
+        <div class="section-title">
+          <h2>Your preferences</h2>
+          <span>0 = not important / low, 10 = very important / high</span>
+        </div>
+
+        <div id="questions"></div>
+
+        <div class="actions">
+          <button class="primary" id="scoreBtn">Calculate my matches</button>
+          <button class="secondary" id="resetBtn">Reset</button>
+        </div>
+      </div>
+
+      <aside class="card results-card">
+        <div class="section-title">
+          <h2>Top matches</h2>
+          <span id="resultCount">Ready</span>
+        </div>
+        <div id="results" class="results-list">
+          <div class="empty">Adjust your preferences, then calculate your matches. Your top five cities will appear here.</div>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      This is a playful preference-matching model, not a relocation consultant. Scores are based on embedded illustrative ratings only.
+    </footer>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        id: "warmClimate",
+        label: "Warm climate",
+        hint: "How much do you prefer mild winters, sun, and warmer year-round weather?",
+        low: "Cool is fine",
+        high: "Warm please",
+        default: 6
+      },
+      {
+        id: "lowCost",
+        label: "Low cost of living",
+        hint: "How important is affordability for housing, food, transit, and everyday life?",
+        low: "Not crucial",
+        high: "Very crucial",
+        default: 6
+      },
+      {
+        id: "walkability",
+        label: "Walkability and transit",
+        hint: "How much do you want a city where daily life works without a car?",
+        low: "Car is okay",
+        high: "Car-free life",
+        default: 8
+      },
+      {
+        id: "nightlife",
+        label: "Nightlife and late energy",
+        hint: "How much do you value restaurants, bars, music, and a lively evening scene?",
+        low: "Quiet nights",
+        high: "Always buzzing",
+        default: 5
+      },
+      {
+        id: "nature",
+        label: "Access to nature",
+        hint: "How important are mountains, beaches, parks, trails, or water nearby?",
+        low: "Urban is enough",
+        high: "Nature nearby",
+        default: 7
+      },
+      {
+        id: "safety",
+        label: "Safety and stability",
+        hint: "How much do you prioritize personal safety, order, and predictability?",
+        low: "Flexible",
+        high: "Top priority",
+        default: 8
+      },
+      {
+        id: "culture",
+        label: "Arts, history, and culture",
+        hint: "How much do you want museums, architecture, festivals, food, and cultural depth?",
+        low: "Nice bonus",
+        high: "Essential",
+        default: 8
+      },
+      {
+        id: "career",
+        label: "Career and professional opportunity",
+        hint: "How important are jobs, business networks, universities, and economic opportunity?",
+        low: "Not central",
+        high: "Very central",
+        default: 7
+      },
+      {
+        id: "international",
+        label: "International and cosmopolitan feel",
+        hint: "How much do you value diversity, global connectivity, and an international population?",
+        low: "Local is fine",
+        high: "Global hub",
+        default: 7
+      },
+      {
+        id: "calm",
+        label: "Calm pace and livability",
+        hint: "How much do you prefer a less hectic, easier, more relaxed city experience?",
+        low: "I like intensity",
+        high: "Keep it calm",
+        default: 6
+      }
+    ];
+
+    const cities = [
+      { name: "Lisbon", country: "Portugal", warmClimate: 9, lowCost: 7, walkability: 8, nightlife: 7, nature: 8, safety: 8, culture: 8, career: 6, international: 8, calm: 7 },
+      { name: "Barcelona", country: "Spain", warmClimate: 8, lowCost: 6, walkability: 9, nightlife: 9, nature: 8, safety: 7, culture: 9, career: 7, international: 8, calm: 5 },
+      { name: "Vienna", country: "Austria", warmClimate: 4, lowCost: 6, walkability: 9, nightlife: 6, nature: 7, safety: 10, culture: 10, career: 8, international: 8, calm: 8 },
+      { name: "Melbourne", country: "Australia", warmClimate: 7, lowCost: 4, walkability: 8, nightlife: 8, nature: 8, safety: 8, culture: 9, career: 8, international: 9, calm: 6 },
+      { name: "Tokyo", country: "Japan", warmClimate: 5, lowCost: 5, walkability: 10, nightlife: 8, nature: 6, safety: 10, culture: 10, career: 9, international: 8, calm: 4 },
+      { name: "Copenhagen", country: "Denmark", warmClimate: 3, lowCost: 3, walkability: 10, nightlife: 7, nature: 7, safety: 10, culture: 8, career: 8, international: 8, calm: 8 },
+      { name: "Vancouver", country: "Canada", warmClimate: 5, lowCost: 2, walkability: 8, nightlife: 6, nature: 10, safety: 8, culture: 8, career: 8, international: 10, calm: 7 },
+      { name: "Montreal", country: "Canada", warmClimate: 2, lowCost: 6, walkability: 8, nightlife: 8, nature: 7, safety: 8, culture: 9, career: 7, international: 8, calm: 6 },
+      { name: "Amsterdam", country: "Netherlands", warmClimate: 3, lowCost: 3, walkability: 10, nightlife: 8, nature: 6, safety: 8, culture: 9, career: 9, international: 10, calm: 6 },
+      { name: "Berlin", country: "Germany", warmClimate: 3, lowCost: 6, walkability: 9, nightlife: 10, nature: 6, safety: 7, culture: 9, career: 8, international: 9, calm: 5 },
+      { name: "New York", country: "United States", warmClimate: 4, lowCost: 1, walkability: 10, nightlife: 10, nature: 5, safety: 6, culture: 10, career: 10, international: 10, calm: 2 },
+      { name: "San Francisco", country: "United States", warmClimate: 6, lowCost: 1, walkability: 8, nightlife: 7, nature: 10, safety: 6, culture: 8, career: 10, international: 9, calm: 5 },
+      { name: "Mexico City", country: "Mexico", warmClimate: 8, lowCost: 8, walkability: 8, nightlife: 9, nature: 6, safety: 4, culture: 10, career: 7, international: 8, calm: 4 },
+      { name: "Buenos Aires", country: "Argentina", warmClimate: 7, lowCost: 8, walkability: 9, nightlife: 9, nature: 5, safety: 5, culture: 9, career: 5, international: 7, calm: 5 },
+      { name: "Medellín", country: "Colombia", warmClimate: 10, lowCost: 8, walkability: 6, nightlife: 8, nature: 9, safety: 5, culture: 7, career: 5, international: 7, calm: 6 },
+      { name: "Cape Town", country: "South Africa", warmClimate: 8, lowCost: 7, walkability: 5, nightlife: 8, nature: 10, safety: 3, culture: 8, career: 6, international: 8, calm: 5 },
+      { name: "Singapore", country: "Singapore", warmClimate: 10, lowCost: 2, walkability: 9, nightlife: 7, nature: 7, safety: 10, culture: 8, career: 10, international: 10, calm: 6 },
+      { name: "Seoul", country: "South Korea", warmClimate: 4, lowCost: 5, walkability: 9, nightlife: 9, nature: 7, safety: 9, culture: 9, career: 9, international: 8, calm: 4 },
+      { name: "Bangkok", country: "Thailand", warmClimate: 10, lowCost: 8, walkability: 6, nightlife: 10, nature: 6, safety: 6, culture: 9, career: 6, international: 9, calm: 4 },
+      { name: "Chiang Mai", country: "Thailand", warmClimate: 9, lowCost: 9, walkability: 6, nightlife: 6, nature: 9, safety: 7, culture: 8, career: 4, international: 7, calm: 8 },
+      { name: "Prague", country: "Czechia", warmClimate: 4, lowCost: 7, walkability: 9, nightlife: 8, nature: 7, safety: 8, culture: 9, career: 7, international: 7, calm: 6 },
+      { name: "Ljubljana", country: "Slovenia", warmClimate: 5, lowCost: 7, walkability: 8, nightlife: 5, nature: 10, safety: 9, culture: 7, career: 5, international: 6, calm: 9 },
+      { name: "Zurich", country: "Switzerland", warmClimate: 4, lowCost: 1, walkability: 9, nightlife: 6, nature: 10, safety: 10, culture: 8, career: 10, international: 10, calm: 8 },
+      { name: "Dubai", country: "United Arab Emirates", warmClimate: 10, lowCost: 3, walkability: 5, nightlife: 8, nature: 5, safety: 9, culture: 6, career: 9, international: 10, calm: 5 },
+      { name: "Auckland", country: "New Zealand", warmClimate: 6, lowCost: 3, walkability: 7, nightlife: 6, nature: 10, safety: 9, culture: 7, career: 7, international: 8, calm: 8 },
+      { name: "Stockholm", country: "Sweden", warmClimate: 2, lowCost: 3, walkability: 9, nightlife: 7, nature: 9, safety: 9, culture: 9, career: 9, international: 8, calm: 8 }
+    ];
+
+    const questionContainer = document.getElementById("questions");
+    const resultsContainer = document.getElementById("results");
+    const resultCount = document.getElementById("resultCount");
+    const scoreBtn = document.getElementById("scoreBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    function renderQuestions() {
+      questionContainer.innerHTML = questions.map(q => `
+        <div class="question">
+          <label class="question-label" for="${q.id}">
+            <span>${q.label}</span>
+            <span class="value-pill" id="${q.id}-value">${q.default}/10</span>
+          </label>
+          <p class="hint">${q.hint}</p>
+          <input id="${q.id}" type="range" min="0" max="10" step="1" value="${q.default}" />
+          <div class="scale"><span>${q.low}</span><span>${q.high}</span></div>
+        </div>
+      `).join("");
+
+      questions.forEach(q => {
+        const input = document.getElementById(q.id);
+        const value = document.getElementById(`${q.id}-value`);
+        input.addEventListener("input", () => {
+          value.textContent = `${input.value}/10`;
+        });
+      });
+    }
+
+    function getPreferences() {
+      return Object.fromEntries(
+        questions.map(q => [q.id, Number(document.getElementById(q.id).value)])
+      );
+    }
+
+    function scoreCity(city, preferences) {
+      let weightedFit = 0;
+      let maxFit = 0;
+
+      questions.forEach(q => {
+        const importance = preferences[q.id];
+        const cityRating = city[q.id];
+        const closeness = 1 - Math.abs(importance - cityRating) / 10;
+        const weight = Math.max(1, importance);
+        weightedFit += closeness * weight;
+        maxFit += weight;
+      });
+
+      return Math.round((weightedFit / maxFit) * 100);
+    }
+
+    function strongestReasons(city, preferences) {
+      return questions
+        .map(q => ({
+          label: q.label.toLowerCase(),
+          id: q.id,
+          closeness: 10 - Math.abs(preferences[q.id] - city[q.id]),
+          cityRating: city[q.id],
+          importance: preferences[q.id]
+        }))
+        .sort((a, b) => b.closeness - a.closeness || b.importance - a.importance)
+        .slice(0, 3);
+    }
+
+    function buildExplanation(city, preferences) {
+      const reasons = strongestReasons(city, preferences);
+      const top = reasons.map(r => r.label).join(", ").replace(/, ([^,]*)$/, ", and $1");
+      const tradeoffs = questions
+        .map(q => ({ label: q.label.toLowerCase(), gap: Math.abs(preferences[q.id] - city[q.id]), importance: preferences[q.id] }))
+        .filter(item => item.gap >= 5 && item.importance >= 6)
+        .sort((a, b) => b.gap - a.gap);
+
+      if (tradeoffs.length) {
+        return `${city.name} fits your preferences for ${top}, though ${tradeoffs[0].label} may be the main compromise.`;
+      }
+
+      return `${city.name} is a strong all-around fit because it lines up especially well on ${top}.`;
+    }
+
+    function tagsForCity(city) {
+      return questions
+        .filter(q => city[q.id] >= 8)
+        .slice(0, 4)
+        .map(q => q.label.replace(" and ", " + "));
+    }
+
+    function calculateMatches() {
+      const preferences = getPreferences();
+      const matches = cities
+        .map(city => ({
+          ...city,
+          score: scoreCity(city, preferences),
+          explanation: buildExplanation(city, preferences),
+          tags: tagsForCity(city)
+        }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5);
+
+      resultCount.textContent = "Top 5";
+      resultsContainer.innerHTML = matches.map((city, index) => `
+        <article class="result">
+          <div class="result-top">
+            <div class="rank-city">
+              <span class="rank">${index + 1}</span>
+              <div>
+                <div class="city-name">${city.name}</div>
+                <div class="country">${city.country}</div>
+              </div>
+            </div>
+            <div class="score">${city.score}%</div>
+          </div>
+          <div class="bar" aria-hidden="true"><div class="bar-fill" style="width: ${city.score}%"></div></div>
+          <p class="explanation">${city.explanation}</p>
+          <div class="meta">
+            ${city.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function resetApp() {
+      questions.forEach(q => {
+        const input = document.getElementById(q.id);
+        const value = document.getElementById(`${q.id}-value`);
+        input.value = q.default;
+        value.textContent = `${q.default}/10`;
+      });
+      resultCount.textContent = "Ready";
+      resultsContainer.innerHTML = `<div class="empty">Adjust your preferences, then calculate your matches. Your top five cities will appear here.</div>`;
+    }
+
+    renderQuestions();
+    scoreBtn.addEventListener("click", calculateMatches);
+    resetBtn.addEventListener("click", resetApp);
+  </script>
+</body>
+</html>
